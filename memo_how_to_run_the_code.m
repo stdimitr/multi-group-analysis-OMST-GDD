@@ -10,6 +10,13 @@ no=10;
 rois=90;
 toy=rand(10,rois,rois);
 
+%% transform them to undirected
+for k=1:rois
+    for l=(k+1):rois
+        toy(:,l,k)=toy(:,k,l);
+    end
+end
+
 thresholded=zeros(no,rois,rois);
 
 %%% topologically filtered of brain networks with OMST
@@ -33,28 +40,7 @@ for k=1:no
     end
 end
 
-%% take the sum of rows
-sum1=sum(dist);
-
-%normalize and keep the coefficients of the linear combination of
-%individualized brain networks
-coef=sum1./sum(sum1);
-
-%%integrated brain network
-integr=zeros(90,90);
-
-for k=1:no
-    integr=integr + coef(k).*squeeze(thresholded(k,:,:));
-end
-
-%% normalize the integrated brain network
-integr=integr./max(integr);
-
-%% topological filtering of integrated brain network with OMST
- [nCIJtree CIJtree mdeg  globalcosteffmax costmax E]=threshold_omst_gce_wu(integr,1);
- 
- figure(2),imagesc(coef) ; colorbar
-           title('Coefficients of the linear combination of brain networks')
+%% dist can be projected to a 2D space with e.g. multi-dimensional scaling
 
 
 
